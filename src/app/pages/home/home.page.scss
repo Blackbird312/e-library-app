@@ -1,0 +1,25 @@
+.center-spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 40%;
+}
+
+ion-card {
+  margin: 12px;
+  border-radius: 14px;
+}
+
+ion-card-title {
+  font-size: 1.1rem;
+}
+
+.loan-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+ion-badge {
+  text-transform: capitalize;
+}

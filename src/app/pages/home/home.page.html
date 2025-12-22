@@ -1,14 +1,66 @@
-<ion-content class="flex items-center justify-center bg-gray-100">
-  <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Loans</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-    <!-- Title -->
-    <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">
-      E-Library
-    </h1>
-    <p class="text-center text-gray-500 mb-6">
-      Home page
-    </p>
+<ion-content>
 
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="loadLoans($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-  </div>
+  <!-- Loading -->
+  <ion-spinner *ngIf="loading" class="center-spinner"></ion-spinner>
+
+  <!-- Error -->
+  <ion-text color="danger" *ngIf="error">
+    <p class="ion-padding">{{ error }}</p>
+  </ion-text>
+
+  <!-- Loan cards -->
+  <ion-card *ngFor="let loan of loans">
+
+    <ion-card-header>
+      <ion-card-title>{{ loan.book.title }}</ion-card-title>
+      <ion-card-subtitle>
+        ISBN: {{ loan.book.isbn }}
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <div class="loan-row">
+        <strong>Borrower:</strong>
+        <span>{{ loan.user.fullName }}</span>
+      </div>
+
+      <div class="loan-row">
+        <strong>Loan date:</strong>
+        <span>{{ loan.loanDate | date }}</span>
+      </div>
+
+      <div class="loan-row">
+        <strong>Due date:</strong>
+        <span>{{ loan.dueDate | date }}</span>
+      </div>
+
+      <div class="loan-row">
+        <strong>Status:</strong>
+        <ion-badge
+          [color]="loan.returned ? 'success' : 'warning'"
+        >
+          {{ loan.returned ? 'Returned' : 'On loan' }}
+        </ion-badge>
+      </div>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Empty state -->
+  <ion-text *ngIf="!loading && loans.length === 0">
+    <p class="ion-padding">No loans found.</p>
+  </ion-text>
+
 </ion-content>
