@@ -1,0 +1,79 @@
+<ion-content fullscreen>
+
+  <!-- Background -->
+  <div class="login-bg">
+
+    <ion-card class="login-card">
+
+      <ion-card-header class="ion-text-center">
+        <ion-card-title class="title">
+          E-Library
+        </ion-card-title>
+        <ion-card-subtitle class="subtitle">
+          Access your digital library
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+
+        <form (ngSubmit)="login()">
+
+          <!-- Username -->
+          <ion-item class="input-item">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Username"
+              labelPlacement="floating"
+              type="text"
+              name="username"
+              [(ngModel)]="username"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <!-- Password -->
+          <ion-item class="input-item ion-margin-top">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Password"
+              labelPlacement="floating"
+              type="password"
+              name="password"
+              [(ngModel)]="password"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <!-- Error -->
+          <ion-text color="danger" class="error-text" *ngIf="error">
+            {{ error }}
+          </ion-text>
+
+          <!-- Button -->
+          <ion-button
+            expand="block"
+            shape="round"
+            size="large"
+            class="login-button"
+            type="submit"
+            [disabled]="loading">
+
+            <ion-spinner
+              *ngIf="loading"
+              name="crescent"
+              slot="start">
+            </ion-spinner>
+
+            {{ loading ? 'Signing in…' : 'Login' }}
+
+          </ion-button>
+
+        </form>
+
+      </ion-card-content>
+
+    </ion-card>
+
+  </div>
+
+</ion-content>
