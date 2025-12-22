@@ -1,0 +1,7 @@
+{
+  "name": "e-library-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
