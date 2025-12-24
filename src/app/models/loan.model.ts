@@ -11,6 +11,7 @@ export interface Book {
   author?: string | null;
   isbn: string;
   availableCopies: number;
+  coverImage?: string | null; 
 }
 
 export interface Loan {

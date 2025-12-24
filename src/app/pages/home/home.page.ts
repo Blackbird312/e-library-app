@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { Loan } from '../../models/loan.model';
 import { LoanService } from 'src/app/services/loans.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -43,5 +44,22 @@ export class HomePage implements OnInit {
         event?.target.complete();
       }
     });
+  }
+
+  getBookImage(coverImage?: string | null): string {
+    if (!coverImage) return 'assets/book-placeholder.png';
+
+    // If backend already returns full URL
+    if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) {
+      return coverImage;
+    }
+
+    // If backend returns "/uploads/..."
+    return `${environment.baseUrl}${coverImage}`;
+  }
+
+  onImgError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/book-placeholder.png';
   }
 }

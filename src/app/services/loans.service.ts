@@ -8,11 +8,14 @@ import { environment } from '../../environments/environment';
   providedIn: 'root',
 })
 export class LoanService {
-  private readonly apiUrl = `${environment.baseUrl}/loans`;
+  private readonly apiUrl = `${environment.baseUrl}/api/loans`;
 
   constructor(private http: HttpClient) {}
 
   getLoans(): Observable<Loan[]> {
-    return this.http.get<Loan[]>(this.apiUrl);
+    return this.http.get<Loan[]>(`${this.apiUrl}`);
   }
+  // getLoans(userId: number): Observable<Loan[]> {
+  //   return this.http.get<Loan[]>(`${this.apiUrl}?userId=${userId}`);
+  // }
 }

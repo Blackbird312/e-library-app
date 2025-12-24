@@ -1,25 +1,56 @@
-.center-spinner {
-  display: flex;
-  justify-content: center;
-  margin-top: 40%;
-}
-
-ion-card {
+.loan-card {
   margin: 12px;
   border-radius: 14px;
+  overflow: hidden;
 }
 
-ion-card-title {
-  font-size: 1.1rem;
+.loan-card-container {
+  display: flex;
+  align-items: stretch;
+}
+
+/* LEFT */
+.loan-cover {
+  width: 120px;
+  min-width: 120px;
+  background: #f4f5f8;
+}
+
+.loan-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* RIGHT */
+.loan-info {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.book-title {
+  margin: 0 0 4px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.isbn {
+  margin: 0 0 10px 0;
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
 }
 
 .loan-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
 }
 
-ion-badge {
-  text-transform: capitalize;
+.status-badge {
+  margin-top: 8px;
+  align-self: flex-start;
 }
