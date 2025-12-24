@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Available Books</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-refresher slot="fixed" (ionRefresh)="loadBooks($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Error -->
+  <div class="ion-padding" *ngIf="error">
+    <ion-text color="danger">{{ error }}</ion-text>
+  </div>
+
+  <!-- Loading skeleton -->
+  <ion-list *ngIf="loading && books.length === 0">
+    <ion-item *ngFor="let _ of [1,2,3,4,5]">
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text animated style="width: 56px; height: 56px;"></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Empty state -->
+  <div class="ion-padding" *ngIf="!loading && !error && books.length === 0">
+    <ion-text>No books available.</ion-text>
+  </div>
+
+  <!-- Books list -->
+  <ion-list *ngIf="books.length > 0">
+    <ion-item *ngFor="let b of books">
+      <ion-thumbnail slot="start">
+        <ion-img [src]="coverUrl(b.coverImage)"></ion-img>
+      </ion-thumbnail>
+
+      <ion-label>
+        <h2>{{ b.title }}</h2>
+        <p>ISBN: {{ b.isbn }} • {{ b.publicationYear }}</p>
+      </ion-label>
+
+      <ion-chip slot="end" [color]="availabilityColor(b)">
+        <ion-label>{{ availabilityText(b) }}</ion-label>
+      </ion-chip>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
