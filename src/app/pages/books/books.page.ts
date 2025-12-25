@@ -1,27 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
-
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonThumbnail,
-  IonImg,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
   IonSkeletonText,
   IonRefresher,
   IonRefresherContent,
   IonText,
-  IonChip,
+  IonButton,
+  IonBadge,
+  IonIcon,
+  IonSegment,
+  IonSegmentButton,
+  AlertController,
+  ToastController
 } from '@ionic/angular/standalone';
-
 import { Book, BookService } from 'src/app/services/books.service';
 import { environment } from 'src/environments/environment';
+import { LoanService } from 'src/app/services/loans.service';
 
 @Component({
   selector: 'app-books',
@@ -32,33 +37,67 @@ import { environment } from 'src/environments/environment';
     IonToolbar,
     IonTitle,
     IonContent,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonNote,
-    IonThumbnail,
-    IonImg,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
     IonSkeletonText,
     IonRefresher,
     IonRefresherContent,
     IonText,
-    IonChip,
+    IonButton,
+    IonBadge,
+    IonIcon,
+    IonSegment,
+    IonSegmentButton,
   ],
   templateUrl: './books.page.html',
   styleUrls: ['./books.page.scss'],
 })
-export class BooksPage {
+export class BooksPage implements OnInit {
   books: Book[] = [];
   loading = false;
   error: string | null = null;
+  viewMode: 'grid' | 'list' = 'grid';
 
-  // used to convert "/uploads/..." => "http://localhost:8080/uploads/..."
   readonly baseUrl = environment.baseUrl;
 
-  constructor(private bookService: BookService) {}
+  constructor(
+    private bookService: BookService,
+    private loanService: LoanService,
+    private router: Router,
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) { }
 
-  ionViewWillEnter() {
+  ngOnInit() {
     this.loadBooks();
+  }
+
+  private async showToast(
+    message: string,
+    color: 'success' | 'danger' | 'warning' | 'primary' = 'primary'
+  ) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2500,
+      position: 'top',
+      color,
+      buttons: [{ text: 'OK', role: 'cancel' }]
+    });
+    await toast.present();
+  }
+
+  private defaultDueDateISO(daysAhead = 30): string {
+    const d = new Date();
+    d.setDate(d.getDate() + daysAhead);
+
+    // "YYYY-MM-DD" (what Spring expects for LocalDate)
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
 
   loadBooks(event?: any) {
@@ -80,19 +119,87 @@ export class BooksPage {
 
   coverUrl(coverImage: string | null | undefined) {
     if (!coverImage) return '';
-    // if backend already returns absolute URL, keep it
     if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) return coverImage;
-    // otherwise prefix baseUrl
     return `${this.baseUrl}${coverImage}`;
   }
 
-  availabilityText(b: Book) {
-    return `${b.availableCopies}/${b.totalCopies} available`;
+  onImgError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    img.parentElement?.querySelector('.cover-fallback')?.classList.remove('hidden');
   }
 
-  availabilityColor(b: Book) {
-    if (b.availableCopies <= 0) return 'danger';
-    if (b.availableCopies <= 2) return 'warning';
-    return 'success';
+  availabilityPercentage(book: Book): number {
+    if (book.totalCopies === 0) return 0;
+    return Math.round((book.availableCopies / book.totalCopies) * 100);
+  }
+
+  onViewChange(event: any) {
+    this.viewMode = event.detail.value;
+  }
+
+  viewBookDetails(book: Book) {
+    this.router.navigate(['/books', book.id]);
+  }
+
+  async borrowBook(event: Event, book: Book) {
+    event.stopPropagation();
+
+    const dueDate = this.defaultDueDateISO(30);
+
+    if (book.availableCopies === 0) {
+      const alert = await this.alertController.create({
+        header: 'Not Available',
+        message: 'This book is currently not available for borrowing.',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Borrow Book',
+      message: `Confirm borrowing "${book.title}"?\n\nDue date: ${dueDate}\n\nYou can return it before this date.`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Borrow',
+          handler: () => {
+            this.loanService.postLoan(book.id, dueDate).subscribe({
+              next: async () => {
+                await this.showToast(
+                  `📚 "${book.title}" borrowed successfully!`,
+                  'success'
+                );
+                this.loadBooks();
+                this.loanService.refreshMyLoans().subscribe({
+                  error: (err) => console.error('Failed to refresh loans', err),
+                });
+
+                this.router.navigate(['/tabs/home']);
+              },
+              error: async (err) => {
+                console.error(err);
+                const message =
+                  err?.error?.message ??
+                  'Unable to borrow the book. Please try again.';
+
+                await this.showToast(message, 'danger');
+              }
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  // Optional: Filtering functionality
+  filterBooks(searchTerm: string) {
+    // Implement search/filter logic
   }
 }

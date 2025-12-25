@@ -1,0 +1,403 @@
+/* Profile Page - Modern Design */
+:host {
+  display: block;
+  background: linear-gradient(135deg, 
+    rgba(var(--ion-color-primary-rgb), 0.05) 0%,
+    rgba(var(--ion-color-secondary-rgb), 0.05) 100%
+  );
+  min-height: 100%;
+}
+
+/* Header */
+ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  
+  ion-title {
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  
+  ion-button {
+    --background: rgba(var(--ion-color-danger-rgb), 0.1);
+    --color: var(--ion-color-danger);
+    --border-radius: 10px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    font-weight: 600;
+    
+    &:hover {
+      --background: rgba(var(--ion-color-danger-rgb), 0.2);
+    }
+  }
+}
+
+/* Background Wave */
+.profile-background {
+  position: relative;
+  height: 240px;
+  background: linear-gradient(135deg, 
+    var(--ion-color-primary) 0%,
+    var(--ion-color-secondary) 100%
+  );
+  border-radius: 0 0 30px 30px;
+  overflow: hidden;
+  
+//   &::before {
+//     content: "";
+//     position: absolute;
+//     bottom: 0;
+//     left: 0;
+//     right: 0;
+//     height: 100px;
+//     background: linear-gradient(to top, 
+//       var(--ion-background-color) 30%,
+//       transparent 100%
+//     );
+//   }
+  
+  .wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    background-size: cover;
+  }
+}
+
+/* Profile Header */
+.profile-header {
+  position: relative;
+  margin-top: -100px;
+  z-index: 10;
+  padding: 0 24px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, 
+    var(--ion-color-primary) 0%,
+    var(--ion-color-secondary) 100%
+  );
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  border: 4px solid var(--ion-background-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(var(--ion-color-primary-rgb), 0.3);
+  
+  ion-icon {
+    font-size: 48px;
+    color: white;
+  }
+  
+  .status-indicator {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    background: var(--ion-color-success);
+    border: 2px solid var(--ion-background-color);
+    border-radius: 50%;
+  }
+}
+
+.profile-info {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.profile-name {
+  margin: 0 0 8px 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  letter-spacing: -0.5px;
+}
+
+.profile-email {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ion-color-medium);
+  font-weight: 500;
+}
+
+/* Stats Cards */
+.stats-section {
+  padding: 0 24px 24px;
+}
+
+.stats-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin: 0 0 16px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--ion-background-color);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid rgba(var(--ion-color-medium-rgb), 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(var(--ion-color-primary-rgb), 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+  
+  &.membership {
+    background: linear-gradient(135deg, 
+      rgba(var(--ion-color-primary-rgb), 0.05) 0%,
+      rgba(var(--ion-color-primary-rgb), 0.1) 100%
+    );
+  }
+  
+  &.loans {
+    background: linear-gradient(135deg, 
+      rgba(var(--ion-color-secondary-rgb), 0.05) 0%,
+      rgba(var(--ion-color-secondary-rgb), 0.1) 100%
+    );
+  }
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  
+  ion-icon {
+    font-size: 24px;
+    color: var(--ion-color-primary);
+  }
+  
+  .loans & {
+    background: rgba(var(--ion-color-secondary-rgb), 0.1);
+    
+    ion-icon {
+      color: var(--ion-color-secondary);
+    }
+  }
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  margin: 0 0 4px 0;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.stat-detail {
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  margin: 8px 0 0 0;
+  font-weight: 400;
+}
+
+/* User Info Section */
+.info-section {
+  padding: 0 24px 40px;
+}
+
+.info-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin: 0 0 16px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
+}
+
+.info-card {
+  background: var(--ion-background-color);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(var(--ion-color-medium-rgb), 0.1);
+}
+
+/* Updated info-item - removed background color */
+.info-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --min-height: 48px;
+  --background: transparent; /* Changed from default */
+  margin-bottom: 16px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  ion-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ion-color-medium);
+  }
+  
+  ion-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 20px;
+  
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    
+    ion-spinner {
+      width: 100%;
+      height: 100%;
+      --color: var(--ion-color-primary);
+    }
+  }
+  
+  .loading-text {
+    font-size: 1rem;
+    color: var(--ion-color-medium);
+    font-weight: 500;
+  }
+}
+
+/* Error State */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 20px;
+  text-align: center;
+  
+  .error-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(var(--ion-color-danger-rgb), 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    
+    ion-icon {
+      font-size: 40px;
+      color: var(--ion-color-danger);
+    }
+  }
+  
+  .error-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin: 0 0 8px 0;
+  }
+  
+  .error-message {
+    font-size: 1rem;
+    color: var(--ion-color-medium);
+    margin: 0 0 20px 0;
+    max-width: 400px;
+  }
+  
+  .retry-button {
+    --background: var(--ion-color-primary);
+    --border-radius: 12px;
+    font-weight: 600;
+    padding-inline: 24px;
+  }
+}
+
+/* Refresher */
+ion-refresher {
+  --color: var(--ion-color-primary);
+  
+  ion-refresher-content {
+    --refresher-icon-color: var(--ion-color-primary);
+  }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .profile-background {
+    height: 280px;
+  }
+  
+  .profile-avatar {
+    width: 140px;
+    height: 140px;
+    
+    ion-icon {
+      font-size: 56px;
+    }
+  }
+  
+  .profile-name {
+    font-size: 2rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .info-card {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

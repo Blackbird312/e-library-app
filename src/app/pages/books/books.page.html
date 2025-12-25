@@ -1,54 +1,124 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Available Books</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-
   <ion-refresher slot="fixed" (ionRefresh)="loadBooks($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <!-- Error -->
-  <div class="ion-padding" *ngIf="error">
-    <ion-text color="danger">{{ error }}</ion-text>
+  <!-- Loading Skeleton -->
+  <div *ngIf="loading && books.length === 0" class="skeleton-grid">
+    <div *ngFor="let _ of [1,2,3,4,5,6]" class="skeleton-card">
+      <div class="skeleton-cover">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </div>
+      <div class="skeleton-content">
+        <ion-skeleton-text animated class="skeleton-line"></ion-skeleton-text>
+        <ion-skeleton-text animated class="skeleton-line"></ion-skeleton-text>
+        <ion-skeleton-text animated class="skeleton-line"></ion-skeleton-text>
+      </div>
+    </div>
   </div>
 
-  <!-- Loading skeleton -->
-  <ion-list *ngIf="loading && books.length === 0">
-    <ion-item *ngFor="let _ of [1,2,3,4,5]">
-      <ion-thumbnail slot="start">
-        <ion-skeleton-text animated style="width: 56px; height: 56px;"></ion-skeleton-text>
-      </ion-thumbnail>
-      <ion-label>
-        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
-        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-
-  <!-- Empty state -->
-  <div class="ion-padding" *ngIf="!loading && !error && books.length === 0">
-    <ion-text>No books available.</ion-text>
+  <!-- Error State -->
+  <div *ngIf="error" class="state-container">
+    <ion-icon name="warning-outline"></ion-icon>
+    <h2>Something went wrong</h2>
+    <p>{{ error }}</p>
+    <ion-button (click)="loadBooks()" fill="solid">
+      Try Again
+    </ion-button>
   </div>
 
-  <!-- Books list -->
-  <ion-list *ngIf="books.length > 0">
-    <ion-item *ngFor="let b of books">
-      <ion-thumbnail slot="start">
-        <ion-img [src]="coverUrl(b.coverImage)"></ion-img>
-      </ion-thumbnail>
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && books.length === 0" class="state-container">
+    <ion-icon name="library-outline"></ion-icon>
+    <h2>No Books Found</h2>
+    <p>There are no books in the library yet. Check back later or add some books.</p>
+    <ion-button routerLink="/add-book" fill="solid" color="primary">
+      Add First Book
+    </ion-button>
+  </div>
 
-      <ion-label>
-        <h2>{{ b.title }}</h2>
-        <p>ISBN: {{ b.isbn }} • {{ b.publicationYear }}</p>
-      </ion-label>
+  <!-- Books Grid -->
+  <div 
+    class="books-grid" 
+    *ngIf="books.length > 0"
+    [class.list-view]="viewMode === 'list'"
+  >
+    <ion-card 
+      *ngFor="let book of books" 
+      class="book-card"
+      button
+      (click)="viewBookDetails(book)"
+    >
+      <!-- Cover Image -->
+      <div class="book-cover">
+        <img 
+          *ngIf="coverUrl(book.coverImage); else fallback"
+          class="cover-image"
+          [src]="coverUrl(book.coverImage)" 
+          (error)="onImgError($event)"
+          [alt]="book.title"
+          loading="lazy"
+        />
+        <ng-template #fallback>
+          <div class="cover-fallback">
+            <ion-icon name="book-outline"></ion-icon>
+          </div>
+        </ng-template>
+      </div>
 
-      <ion-chip slot="end" [color]="availabilityColor(b)">
-        <ion-label>{{ availabilityText(b) }}</ion-label>
-      </ion-chip>
-    </ion-item>
-  </ion-list>
+      <!-- Content -->
+      <div class="book-content">
+        <!-- Header -->
+        <div class="book-header">
+          <h3 class="book-title">{{ book.title }}</h3>
+          <div class="book-meta">
+            <span class="book-isbn">ISBN: {{ book.isbn }}</span>
+            <span class="book-year">{{ book.publicationYear }}</span>
+          </div>
+        </div>
 
+        <!-- Availability -->
+        <div class="availability-section">
+          <div class="availability-header">
+            <span class="availability-text">Availability</span>
+            <ion-badge 
+              class="copies-badge"
+              [class.available]="book.availableCopies > 2"
+              [class.limited]="book.availableCopies > 0 && book.availableCopies <= 2"
+              [class.unavailable]="book.availableCopies === 0"
+            >
+              {{ book.availableCopies }}/{{ book.totalCopies }}
+            </ion-badge>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="availability-progress">
+            <div class="progress-label">
+              <span>Copies available</span>
+              <span>{{ availabilityPercentage(book) }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div 
+                class="progress-fill"
+                [class.high]="book.availableCopies > 2"
+                [class.medium]="book.availableCopies > 0 && book.availableCopies <= 2"
+                [class.low]="book.availableCopies === 0"
+                [style.width.%]="availabilityPercentage(book)"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <ion-button 
+            class="book-action"
+            [color]="book.availableCopies > 0 ? 'primary' : 'medium'"
+            [class.disabled]="book.availableCopies === 0"
+            (click)="borrowBook($event, book)"
+          >
+            {{ book.availableCopies > 0 ? 'Borrow Book' : 'Unavailable' }}
+          </ion-button>
+        </div>
+      </div>
+    </ion-card>
+  </div>
 </ion-content>

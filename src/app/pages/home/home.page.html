@@ -1,40 +1,102 @@
-<ion-card *ngFor="let loan of loans" class="loan-card">
+<ion-content>
+  <div 
+    class="loans-grid"
+    [class.compact-view]="isCompactView"
+  >
+    <ng-container *ngIf="loans?.length; else emptyState">
+      <ion-card 
+        *ngFor="let loan of loans" 
+        class="loan-grid-item"
+        [class.overdue]="isOverdue(loan.dueDate) && !loan.returned"
+      >
+        <!-- Cover Image -->
+        <div class="loan-cover-section">
+          <img 
+            class="cover-image"
+            [src]="getBookImage(loan.book.coverImage)" 
+            (error)="onImgError($event)" 
+            [alt]="loan.book.title"
+            loading="lazy"
+          />
+        </div>
 
-  <div class="loan-card-container">
+        <!-- Content Grid -->
+        <div class="loan-content-grid">
+          <!-- Book Info -->
+          <div class="book-header">
+            <h3 class="book-title">{{ loan.book.title }}</h3>
+            <div class="book-meta">
+              <span class="isbn-label">ISBN: {{ loan.book.isbn }}</span>
+              <span>{{ loan.book.author }}</span>
+            </div>
+          </div>
 
-    <!-- LEFT: Book cover -->
-    <div class="loan-cover">
-      <img
-        [src]="getBookImage(loan.book.coverImage)"
-        (error)="onImgError($event)"
-        alt="Book cover"
-      />
-    </div>
+          <!-- Dates Grid -->
+          <div class="dates-grid">
+            <div class="date-card">
+              <span class="date-label">Loaned</span>
+              <span class="date-value">{{ loan.loanDate | date:'MMM dd' }}</span>
+            </div>
+            <div class="date-card due-date">
+              <span class="date-label">Due</span>
+              <span class="date-value">{{ loan.dueDate | date:'MMM dd' }}</span>
+            </div>
+          </div>
 
-    <!-- RIGHT: Info -->
-    <div class="loan-info">
+          <!-- Progress Bar (Optional) -->
+          <div class="due-progress" *ngIf="!loan.returned">
+            <div class="progress-label">
+              <span>Time remaining</span>
+              <span>{{ getDaysRemaining(loan.dueDate) }} days</span>
+            </div>
+            <div class="progress-bar">
+              <div 
+                class="progress-fill"
+                [class.warning]="getDaysRemaining(loan.dueDate) <= 3"
+                [class.danger]="isOverdue(loan.dueDate)"
+                [style.width.%]="getProgressPercentage(loan.loanDate, loan.dueDate)"
+              ></div>
+            </div>
+          </div>
 
-      <h2 class="book-title">{{ loan.book.title }}</h2>
-      <p class="isbn">ISBN: {{ loan.book.isbn }}</p>
+          <!-- Status Section -->
+          <div class="status-section">
+            <div 
+              class="days-remaining"
+              [class.overdue]="isOverdue(loan.dueDate) && !loan.returned"
+            >
+              <span *ngIf="!loan.returned">
+                {{ isOverdue(loan.dueDate) ? 'Overdue' : getDaysRemaining(loan.dueDate) + ' days left' }}
+              </span>
+            </div>
+            
+            <ion-badge 
+              class="status-badge"
+              [class.returned]="loan.returned"
+              [class.on-loan]="!loan.returned && !isOverdue(loan.dueDate)"
+              [class.overdue]="isOverdue(loan.dueDate) && !loan.returned"
+            >
+              {{ loan.returned ? 'Returned' : (isOverdue(loan.dueDate) ? 'Overdue' : 'Active') }}
+            </ion-badge>
+          </div>
+        </div>
+      </ion-card>
+    </ng-container>
 
-      <div class="loan-row">
-        <span>Loan date</span>
-        <strong>{{ loan.loanDate | date }}</strong>
+    <ng-template #emptyState>
+      <div class="empty-grid">
+        <ion-icon name="library-outline"></ion-icon>
+        <h3>No Books on Loan</h3>
+        <p>Your borrowed books will appear here</p>
+        <ion-button 
+          fill="outline" 
+          color="medium" 
+          class="ion-margin-top"
+          routerLink="/catalog"
+        >
+          Browse Catalog
+        </ion-button>
       </div>
-
-      <div class="loan-row">
-        <span>Due date</span>
-        <strong>{{ loan.dueDate | date }}</strong>
-      </div>
-
-      <ion-badge
-        class="status-badge"
-        [color]="loan.returned ? 'success' : 'warning'">
-        {{ loan.returned ? 'Returned' : 'On loan' }}
-      </ion-badge>
-
-    </div>
-
+    </ng-template>
   </div>
-
-</ion-card>
+</ion-content>

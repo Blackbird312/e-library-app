@@ -9,18 +9,13 @@ import {
   IonContent,
   IonButtons,
   IonButton,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
-  IonItem,
-  IonLabel,
-  IonNote,
+  IonIcon,
   IonText,
   IonRefresher,
   IonRefresherContent,
-  IonLoading
+  IonSpinner,
+  IonItem,
+  IonLabel
 } from '@ionic/angular/standalone';
 
 import { UserResponse, UserService } from 'src/app/services/user.service';
@@ -31,34 +26,24 @@ import { AuthService } from 'src/app/services/auth.service';
   standalone: true,
   imports: [
     CommonModule,
-
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
     IonButtons,
     IonButton,
-
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonCardContent,
-
-    IonItem,
-    IonLabel,
-    IonNote,
+    IonIcon,
     IonText,
-
     IonRefresher,
     IonRefresherContent,
-    IonLoading
+    IonSpinner,
+    IonItem,
+    IonLabel
   ],
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
 })
 export class ProfilePage implements OnInit {
-
   user: UserResponse | null = null;
   loading = false;
   error: string | null = null;
@@ -69,10 +54,6 @@ export class ProfilePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadMe();
-  }
-
-  ionViewWillEnter() {
     this.loadMe();
   }
 
@@ -100,6 +81,5 @@ export class ProfilePage implements OnInit {
 
   logout() {
     this.auth.logout();
-    // navigate to login if needed
   }
 }

@@ -29,6 +29,40 @@ export class HomePage implements OnInit {
     this.loadLoans();
   }
 
+  // In your component
+isCompactView = false;
+
+toggleCompactView() {
+  this.isCompactView = !this.isCompactView;
+}
+
+isOverdue(dueDate: Date | string): boolean {
+  const due = new Date(dueDate);
+  const today = new Date();
+  return due < today;
+}
+
+getDaysRemaining(dueDate: Date | string): number {
+  const due = new Date(dueDate);
+  const today = new Date();
+  const diffTime = due.getTime() - today.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+getProgressPercentage(loanDate: Date | string, dueDate: Date | string): number {
+  const loan = new Date(loanDate);
+  const due = new Date(dueDate);
+  const today = new Date();
+  
+  const totalLoanTime = due.getTime() - loan.getTime();
+  const elapsedTime = today.getTime() - loan.getTime();
+  
+  if (elapsedTime <= 0) return 0;
+  if (elapsedTime >= totalLoanTime) return 100;
+  
+  return Math.min(100, Math.max(0, (elapsedTime / totalLoanTime) * 100));
+}
+
   loadLoans(event?: any) {
     this.loading = true;
 
