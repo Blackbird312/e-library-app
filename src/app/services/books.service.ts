@@ -21,4 +21,10 @@ export class BookService {
   getAll() {
     return this.http.get<Book[]>(this.API_URL);
   }
+
+  searchBooksByTitle(title: string) {
+    return this.http.get<Book[]>(`${this.API_URL}/search`, {
+      params: { title },
+    });
+  }
 }

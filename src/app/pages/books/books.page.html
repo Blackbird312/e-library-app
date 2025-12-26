@@ -37,28 +37,24 @@
     </ion-button>
   </div>
 
+  <div class="search-container" *ngIf="!loading && !error && books.length > 0">
+    <ion-searchbar placeholder="Search books by title..." [(ngModel)]="searchTerm" (ionFocus)="onSearchFocus()"
+      (ionBlur)="onSearchBlur()" [class.searchbar-focused]="isFocused" [class.animated]="isFocused">
+    </ion-searchbar>
+
+    <ion-button expand="block" (click)="onSearch()">
+      Search
+    </ion-button>
+  </div>
+
+
   <!-- Books Grid -->
-  <div 
-    class="books-grid" 
-    *ngIf="books.length > 0"
-    [class.list-view]="viewMode === 'list'"
-  >
-    <ion-card 
-      *ngFor="let book of books" 
-      class="book-card"
-      button
-      (click)="viewBookDetails(book)"
-    >
+  <div class="books-grid" *ngIf="books.length > 0" [class.list-view]="viewMode === 'list'">
+    <ion-card *ngFor="let book of books" class="book-card" button (click)="viewBookDetails(book)">
       <!-- Cover Image -->
       <div class="book-cover">
-        <img 
-          *ngIf="coverUrl(book.coverImage); else fallback"
-          class="cover-image"
-          [src]="coverUrl(book.coverImage)" 
-          (error)="onImgError($event)"
-          [alt]="book.title"
-          loading="lazy"
-        />
+        <img *ngIf="coverUrl(book.coverImage); else fallback" class="cover-image" [src]="coverUrl(book.coverImage)"
+          (error)="onImgError($event)" [alt]="book.title" loading="lazy" />
         <ng-template #fallback>
           <div class="cover-fallback">
             <ion-icon name="book-outline"></ion-icon>
@@ -81,12 +77,9 @@
         <div class="availability-section">
           <div class="availability-header">
             <span class="availability-text">Availability</span>
-            <ion-badge 
-              class="copies-badge"
-              [class.available]="book.availableCopies > 2"
+            <ion-badge class="copies-badge" [class.available]="book.availableCopies > 2"
               [class.limited]="book.availableCopies > 0 && book.availableCopies <= 2"
-              [class.unavailable]="book.availableCopies === 0"
-            >
+              [class.unavailable]="book.availableCopies === 0">
               {{ book.availableCopies }}/{{ book.totalCopies }}
             </ion-badge>
           </div>
@@ -98,23 +91,15 @@
               <span>{{ availabilityPercentage(book) }}%</span>
             </div>
             <div class="progress-bar">
-              <div 
-                class="progress-fill"
-                [class.high]="book.availableCopies > 2"
+              <div class="progress-fill" [class.high]="book.availableCopies > 2"
                 [class.medium]="book.availableCopies > 0 && book.availableCopies <= 2"
-                [class.low]="book.availableCopies === 0"
-                [style.width.%]="availabilityPercentage(book)"
-              ></div>
+                [class.low]="book.availableCopies === 0" [style.width.%]="availabilityPercentage(book)"></div>
             </div>
           </div>
 
           <!-- Action Button -->
-          <ion-button 
-            class="book-action"
-            [color]="book.availableCopies > 0 ? 'primary' : 'medium'"
-            [class.disabled]="book.availableCopies === 0"
-            (click)="borrowBook($event, book)"
-          >
+          <ion-button class="book-action" [color]="book.availableCopies > 0 ? 'primary' : 'medium'"
+            [class.disabled]="book.availableCopies === 0" (click)="borrowBook($event, book)">
             {{ book.availableCopies > 0 ? 'Borrow Book' : 'Unavailable' }}
           </ion-button>
         </div>

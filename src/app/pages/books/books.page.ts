@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
   IonToolbar,
@@ -21,17 +22,20 @@ import {
   IonIcon,
   IonSegment,
   IonSegmentButton,
+  IonSearchbar,
   AlertController,
-  ToastController
+  ToastController,
 } from '@ionic/angular/standalone';
 import { Book, BookService } from 'src/app/services/books.service';
 import { environment } from 'src/environments/environment';
 import { LoanService } from 'src/app/services/loans.service';
-
+import { ToastService } from 'src/app/services/toast.service';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-books',
   standalone: true,
   imports: [
+    FormsModule,
     CommonModule,
     IonHeader,
     IonToolbar,
@@ -51,6 +55,7 @@ import { LoanService } from 'src/app/services/loans.service';
     IonIcon,
     IonSegment,
     IonSegmentButton,
+    IonSearchbar
   ],
   templateUrl: './books.page.html',
   styleUrls: ['./books.page.scss'],
@@ -68,26 +73,47 @@ export class BooksPage implements OnInit {
     private loanService: LoanService,
     private router: Router,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toast: ToastService,
+    private route: ActivatedRoute
   ) { }
 
-  ngOnInit() {
-    this.loadBooks();
+  isFocused = false;
+
+  onSearchFocus() {
+    this.isFocused = true;
   }
 
-  private async showToast(
-    message: string,
-    color: 'success' | 'danger' | 'warning' | 'primary' = 'primary'
-  ) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2500,
-      position: 'top',
-      color,
-      buttons: [{ text: 'OK', role: 'cancel' }]
-    });
-    await toast.present();
+  onSearchBlur() {
+    this.isFocused = false;
   }
+
+  searchTerm = '';
+
+  onSearch() {
+    const title = this.searchTerm.trim();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { title: title || null }, // null removes it from URL
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  ngOnInit() {
+    this.route.queryParamMap.subscribe(params => {
+      const title = (params.get('title') || '').trim();
+
+      this.searchTerm = title;
+
+      if (!title) {
+        this.loadBooks();
+        return;
+      }
+
+      this.filterBooks(title);
+    });
+  }
+
 
   private defaultDueDateISO(daysAhead = 30): string {
     const d = new Date();
@@ -170,7 +196,7 @@ export class BooksPage implements OnInit {
           handler: () => {
             this.loanService.postLoan(book.id, dueDate).subscribe({
               next: async () => {
-                await this.showToast(
+                await this.toast.showToast(
                   `📚 "${book.title}" borrowed successfully!`,
                   'success'
                 );
@@ -187,7 +213,7 @@ export class BooksPage implements OnInit {
                   err?.error?.message ??
                   'Unable to borrow the book. Please try again.';
 
-                await this.showToast(message, 'danger');
+                await this.toast.showToast(message, 'danger');
               }
             });
           }
@@ -199,7 +225,18 @@ export class BooksPage implements OnInit {
   }
 
   // Optional: Filtering functionality
-  filterBooks(searchTerm: string) {
-    // Implement search/filter logic
+  filterBooks(title: string) {
+    this.bookService.searchBooksByTitle(title)
+    .pipe(finalize(() => this.loading = false))
+    .subscribe({
+      next: (data) => {
+        this.books = data ?? [];
+      },
+      error: async (err) => {
+        this.error = err?.error?.message || `No books found for "${title}"`;
+        await this.toast.showToast(this.error as string, 'danger');
+        this.books = [];
+      },
+    });
   }
 }
