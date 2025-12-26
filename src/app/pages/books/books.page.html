@@ -29,7 +29,7 @@
 
   <!-- Empty State -->
   <div *ngIf="!loading && !error && books.length === 0" class="state-container">
-    <ion-icon name="library-outline"></ion-icon>
+    <!-- <ion-icon name="library-outline"></ion-icon> -->
     <h2>No Books Found</h2>
     <p>There are no books in the library yet. Check back later or add some books.</p>
     <ion-button routerLink="/add-book" fill="solid" color="primary">

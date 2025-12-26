@@ -1,23 +1,12 @@
 <ion-content>
-  <div 
-    class="loans-grid"
-    [class.compact-view]="isCompactView"
-  >
+  <div class="loans-grid" [class.compact-view]="isCompactView">
     <ng-container *ngIf="loans?.length; else emptyState">
-      <ion-card 
-        *ngFor="let loan of loans" 
-        class="loan-grid-item"
-        [class.overdue]="isOverdue(loan.dueDate) && !loan.returned"
-      >
+      <ion-card *ngFor="let loan of loans" class="loan-grid-item"
+        [class.overdue]="isOverdue(loan.dueDate) && !loan.returned">
         <!-- Cover Image -->
         <div class="loan-cover-section">
-          <img 
-            class="cover-image"
-            [src]="getBookImage(loan.book.coverImage)" 
-            (error)="onImgError($event)" 
-            [alt]="loan.book.title"
-            loading="lazy"
-          />
+          <img class="cover-image" [src]="getBookImage(loan.book.coverImage)" (error)="onImgError($event)"
+            [alt]="loan.book.title" loading="lazy" />
         </div>
 
         <!-- Content Grid -->
@@ -42,6 +31,7 @@
               <span class="date-value">{{ loan.dueDate | date:'MMM dd' }}</span>
             </div>
           </div>
+          
 
           <!-- Progress Bar (Optional) -->
           <div class="due-progress" *ngIf="!loan.returned">
@@ -50,50 +40,42 @@
               <span>{{ getDaysRemaining(loan.dueDate) }} days</span>
             </div>
             <div class="progress-bar">
-              <div 
-                class="progress-fill"
-                [class.warning]="getDaysRemaining(loan.dueDate) <= 3"
+              <div class="progress-fill" [class.warning]="getDaysRemaining(loan.dueDate) <= 3"
                 [class.danger]="isOverdue(loan.dueDate)"
-                [style.width.%]="getProgressPercentage(loan.loanDate, loan.dueDate)"
-              ></div>
+                [style.width.%]="getProgressPercentage(loan.loanDate, loan.dueDate)"></div>
             </div>
           </div>
 
           <!-- Status Section -->
           <div class="status-section">
-            <div 
-              class="days-remaining"
-              [class.overdue]="isOverdue(loan.dueDate) && !loan.returned"
-            >
+            <div class="days-remaining" [class.overdue]="isOverdue(loan.dueDate) && !loan.returned">
               <span *ngIf="!loan.returned">
                 {{ isOverdue(loan.dueDate) ? 'Overdue' : getDaysRemaining(loan.dueDate) + ' days left' }}
               </span>
             </div>
-            
-            <ion-badge 
-              class="status-badge"
-              [class.returned]="loan.returned"
+            <ion-badge class="status-badge" [class.returned]="loan.returned"
               [class.on-loan]="!loan.returned && !isOverdue(loan.dueDate)"
-              [class.overdue]="isOverdue(loan.dueDate) && !loan.returned"
-            >
+              [class.overdue]="isOverdue(loan.dueDate) && !loan.returned">
               {{ loan.returned ? 'Returned' : (isOverdue(loan.dueDate) ? 'Overdue' : 'Active') }}
             </ion-badge>
           </div>
+          <div class="date-card return-date" *ngIf="loan.returned">
+            <span class="date-label">Returned on</span>
+            <span class="date-value">{{ loan.returnDate | date:'MMM dd' }}</span>
+          </div>
+          <ion-button *ngIf="!loan.returned" [color]="'success'" (click)="returnLoan($event, loan.id, loan.book.title)">
+            Return Book
+          </ion-button>
         </div>
       </ion-card>
     </ng-container>
 
     <ng-template #emptyState>
       <div class="empty-grid">
-        <ion-icon name="library-outline"></ion-icon>
+        <!-- <ion-icon name="library-outline"></ion-icon> -->
         <h3>No Books on Loan</h3>
         <p>Your borrowed books will appear here</p>
-        <ion-button 
-          fill="outline" 
-          color="medium" 
-          class="ion-margin-top"
-          routerLink="/catalog"
-        >
+        <ion-button fill="outline" color="medium" class="ion-margin-top" routerLink="/catalog">
           Browse Catalog
         </ion-button>
       </div>

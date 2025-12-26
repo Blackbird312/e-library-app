@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-
+import { AlertController } from '@ionic/angular';
 import { Loan } from '../../models/loan.model';
 import { LoanService } from 'src/app/services/loans.service';
 import { environment } from 'src/environments/environment';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-home',
@@ -23,45 +24,49 @@ export class HomePage implements OnInit {
   loading = true;
   error?: string;
 
-  constructor(private loanService: LoanService) {}
+  constructor(
+    private loanService: LoanService,
+    private toast: ToastService,
+    private alertController: AlertController
+  ) { }
 
   ngOnInit() {
     this.loadLoans();
   }
 
   // In your component
-isCompactView = false;
+  isCompactView = false;
 
-toggleCompactView() {
-  this.isCompactView = !this.isCompactView;
-}
+  toggleCompactView() {
+    this.isCompactView = !this.isCompactView;
+  }
 
-isOverdue(dueDate: Date | string): boolean {
-  const due = new Date(dueDate);
-  const today = new Date();
-  return due < today;
-}
+  isOverdue(dueDate: Date | string): boolean {
+    const due = new Date(dueDate);
+    const today = new Date();
+    return due < today;
+  }
 
-getDaysRemaining(dueDate: Date | string): number {
-  const due = new Date(dueDate);
-  const today = new Date();
-  const diffTime = due.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
+  getDaysRemaining(dueDate: Date | string): number {
+    const due = new Date(dueDate);
+    const today = new Date();
+    const diffTime = due.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
 
-getProgressPercentage(loanDate: Date | string, dueDate: Date | string): number {
-  const loan = new Date(loanDate);
-  const due = new Date(dueDate);
-  const today = new Date();
-  
-  const totalLoanTime = due.getTime() - loan.getTime();
-  const elapsedTime = today.getTime() - loan.getTime();
-  
-  if (elapsedTime <= 0) return 0;
-  if (elapsedTime >= totalLoanTime) return 100;
-  
-  return Math.min(100, Math.max(0, (elapsedTime / totalLoanTime) * 100));
-}
+  getProgressPercentage(loanDate: Date | string, dueDate: Date | string): number {
+    const loan = new Date(loanDate);
+    const due = new Date(dueDate);
+    const today = new Date();
+
+    const totalLoanTime = due.getTime() - loan.getTime();
+    const elapsedTime = today.getTime() - loan.getTime();
+
+    if (elapsedTime <= 0) return 0;
+    if (elapsedTime >= totalLoanTime) return 100;
+
+    return Math.min(100, Math.max(0, (elapsedTime / totalLoanTime) * 100));
+  }
 
   loadLoans(event?: any) {
     this.loading = true;
@@ -95,5 +100,39 @@ getProgressPercentage(loanDate: Date | string, dueDate: Date | string): number {
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
     img.src = 'assets/book-placeholder.png';
+  }
+
+  async returnLoan(event: Event, bookId: number, bookTitle?: string) {
+    event.stopPropagation(); // Prevent triggering other click events
+    const alert = await this.alertController.create({
+      header: 'Borrow Book',
+      message: `Confirm you want to return this book? - ${bookTitle}`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Return',
+          handler: () => {
+            this.loanService.postReturnLoan(bookId).subscribe({
+              next: async () => {
+                await this.toast.showToast(
+                  `📚 "Book returned successfully!`,
+                  'success'
+                );
+
+                this.loadLoans(); // Refresh the loans list after returning
+              },
+              error: async (err) => {
+                const message = err?.error?.message || 'Unable to return the book. Please try again.';
+                await this.toast.showToast(message, 'danger');
+              }
+            })
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

@@ -27,4 +27,8 @@ export class LoanService {
   postLoan(bookId: number, dueDate: string): Observable<Loan> {
     return this.http.post<Loan>(`${this.apiUrl}/iborrow`, { bookId, dueDate });
   }
+
+  postReturnLoan(bookId:number):Observable<Loan>{
+    return this.http.post<Loan>(`${this.apiUrl}/${bookId}/return`, {});
+  }
 }
