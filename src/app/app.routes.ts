@@ -41,6 +41,11 @@ export const routes: Routes = [
           import('./pages/books/books.page').then(m => m.BooksPage),
       },
       {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./pages/notifications/notifications.page').then(m => m.NotificationsPage),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'home',
@@ -52,5 +57,5 @@ export const routes: Routes = [
   {
     path: '**',
     redirectTo: isLoggedIn() ? 'tabs/home' : 'login',
-  },
+  }
 ];

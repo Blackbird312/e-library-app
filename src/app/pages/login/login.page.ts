@@ -43,8 +43,8 @@ import { environment } from 'src/environments/environment';
   ],
 })
 export class LoginPage {
-  username = `${environment.cridentials.username}`;
-  password = `${environment.cridentials.password}`;
+  username = `${environment.cridentials.username}` || '';
+  password = `${environment.cridentials.password}` || '';
   loading = false;
   error: string | null = null;
 
@@ -57,7 +57,7 @@ export class LoginPage {
     this.loading = true;
     this.error = null;
 
-    this.auth.login(this.username, this.password).subscribe({
+    this.auth.login({username: this.username, password: this.password}).subscribe({
       next: () => {
         this.loading = false;
         this.router.navigateByUrl('/tabs/home');

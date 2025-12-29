@@ -53,7 +53,7 @@
     <ion-card *ngFor="let book of books" class="book-card" button (click)="viewBookDetails(book)">
       <!-- Cover Image -->
       <div class="book-cover">
-        <img *ngIf="coverUrl(book.coverImage); else fallback" class="cover-image" [src]="coverUrl(book.coverImage)"
+        <img *ngIf="coverUrl(); else fallback" class="cover-image" [src]="coverUrl()"
           (error)="onImgError($event)" [alt]="book.title" loading="lazy" />
         <ng-template #fallback>
           <div class="cover-fallback">

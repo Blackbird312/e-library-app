@@ -143,10 +143,8 @@ export class BooksPage implements OnInit {
       });
   }
 
-  coverUrl(coverImage: string | null | undefined) {
-    if (!coverImage) return '';
-    if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) return coverImage;
-    return `${this.baseUrl}${coverImage}`;
+  coverUrl() {
+    return `https://picsum.photos/300/500`;
   }
 
   onImgError(event: Event) {
@@ -227,16 +225,16 @@ export class BooksPage implements OnInit {
   // Optional: Filtering functionality
   filterBooks(title: string) {
     this.bookService.searchBooksByTitle(title)
-    .pipe(finalize(() => this.loading = false))
-    .subscribe({
-      next: (data) => {
-        this.books = data ?? [];
-      },
-      error: async (err) => {
-        this.error = err?.error?.message || `No books found for "${title}"`;
-        await this.toast.showToast(this.error as string, 'danger');
-        this.books = [];
-      },
-    });
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: (data) => {
+          this.books = data ?? [];
+        },
+        error: async (err) => {
+          this.error = err?.error?.message || `No books found for "${title}"`;
+          await this.toast.showToast(this.error as string, 'danger');
+          this.books = [];
+        },
+      });
   }
 }

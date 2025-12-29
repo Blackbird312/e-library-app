@@ -5,7 +5,7 @@
         [class.overdue]="isOverdue(loan.dueDate) && !loan.returned">
         <!-- Cover Image -->
         <div class="loan-cover-section">
-          <img class="cover-image" [src]="getBookImage(loan.book.coverImage)" (error)="onImgError($event)"
+          <img class="cover-image" [src]="getBookImage()" (error)="onImgError($event)"
             [alt]="loan.book.title" loading="lazy" />
         </div>
 

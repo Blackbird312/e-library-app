@@ -85,20 +85,17 @@ export class HomePage implements OnInit {
     });
   }
 
-  getBookImage(coverImage?: string | null): string {
-    if (!coverImage) return 'assets/book-placeholder.png';
-
-    // If backend already returns full URL
-    if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) {
-      return coverImage;
-    }
-
-    // If backend returns "/uploads/..."
-    return `${environment.baseUrl}${coverImage}`;
+  getBookImage(): string {
+    return `https://picsum.photos/300/500`;
   }
 
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
+
+    // prevent infinite loop
+    if (img.dataset['fallbackApplied'] === '1') return;
+    img.dataset['fallbackApplied'] = '1';
+
     img.src = 'assets/book-placeholder.png';
   }
 

@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Notifications</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="clear()">Clear</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="items$ | async as items">
+    <ion-list *ngIf="items.length > 0; else empty">
+      <ion-item *ngFor="let n of items; trackBy: trackById">
+        <ion-label>
+          <h2>{{ n.title }}</h2>
+          <p>{{ n.body }}</p>
+          <p style="opacity:0.7; font-size: 12px;">
+            {{ n.receivedAt | date:'medium' }}
+          </p>
+          <pre *ngIf="n.data" style="white-space: pre-wrap; font-size: 12px; opacity: 0.8;">
+{{ n.data | json }}
+          </pre>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ng-template #empty>
+      <div style="padding:16px; opacity:0.8;">
+        No notifications yet.
+      </div>
+    </ng-template>
+  </ng-container>
+</ion-content>

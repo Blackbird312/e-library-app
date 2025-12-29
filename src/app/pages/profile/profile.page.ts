@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
+import { Router } from '@angular/router';
 
 import {
   IonHeader,
@@ -50,8 +51,9 @@ export class ProfilePage implements OnInit {
 
   constructor(
     private userService: UserService,
-    private auth: AuthService
-  ) {}
+    private auth: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.loadMe();
@@ -80,6 +82,12 @@ export class ProfilePage implements OnInit {
   }
 
   logout() {
-    this.auth.logout();
+    this.auth.logout().subscribe(
+      () => {
+        this.router.navigateByUrl('/login').then(() => {
+          window.location.reload();
+        });
+      }
+    );
   }
 }
