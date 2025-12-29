@@ -6,6 +6,9 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './app/services/auth-interceptor';
+import { inject, provideAppInitializer } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { AuthService } from './app/services/auth.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -15,5 +18,9 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(
       withInterceptors([authInterceptor])
     ),
+    provideAppInitializer(() => {
+      const auth = inject(AuthService);
+      return firstValueFrom(auth.init()); // ✅ token loaded BEFORE guards
+    }),
   ],
 });

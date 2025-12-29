@@ -29,7 +29,7 @@ export class AuthService {
     map(t => !!t)
   );
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   /**
    * Call once on app start (AppComponent) so guards/interceptor work on cold start.
@@ -44,6 +44,7 @@ export class AuthService {
     );
   }
 
+  
   /** Sync for interceptor */
   getTokenSync(): string | null {
     return this.token;
