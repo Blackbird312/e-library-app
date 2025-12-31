@@ -5,11 +5,17 @@
   align-items: center;
   justify-content: center;
   /* Soft gradient */
-  background: linear-gradient(
-    135deg,
-    var(--ion-color-primary) 0%,
-    var(--ion-color-primary-shade) 100%
-  );
+   background-image:
+    linear-gradient(
+      135deg,
+      rgba(var(--ion-color-primary-rgb), 0.15) 0%,
+      rgba(var(--ion-color-secondary-rgb), 0.15) 100%
+    ),
+    url("/assets/elib-bg.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Card */
