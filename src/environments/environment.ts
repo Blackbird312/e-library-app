@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost:8080',
+  // baseUrl: 'http://localhost:8080',
+  baseUrl: 'https://unprickled-reece-distressfully.ngrok-free.dev',
   cridentials:{
     username: 's.jack@elib.com',
     password: 'azerty'

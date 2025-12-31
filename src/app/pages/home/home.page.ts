@@ -73,7 +73,7 @@ export class HomePage implements OnInit {
 
     this.loanService.getLoans().subscribe({
       next: (data) => {
-        this.loans = data;
+        this.loans = data.sort((a, b) => a.returnDate ? 1 : -1); // Active loans first
         this.loading = false;
         event?.target.complete();
       },

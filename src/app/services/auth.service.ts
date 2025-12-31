@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, concatMap, map, switchMap, tap } from 'rxjs/operators';
 import { Preferences } from '@capacitor/preferences';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { PushOrchestratorService } from './push-orchestrator.service';
 
 type LoginPayload = {
   username: string;
@@ -29,7 +30,7 @@ export class AuthService {
     map(t => !!t)
   );
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private pushOrchestrator: PushOrchestratorService) { }
 
   /**
    * Call once on app start (AppComponent) so guards/interceptor work on cold start.
@@ -44,7 +45,7 @@ export class AuthService {
     );
   }
 
-  
+
   /** Sync for interceptor */
   getTokenSync(): string | null {
     return this.token;
@@ -74,7 +75,7 @@ export class AuthService {
             return authHeader.replace('Bearer ', '').trim();
           }
 
-          // 2) Try body: { token } or { accessToken }
+          // 2) Try body: { token }
           const body = res.body ?? {};
           const token = body.token || body.accessToken;
 
@@ -84,7 +85,12 @@ export class AuthService {
           if (!token) {
             return throwError(() => new Error('No token returned from login.'));
           }
-          return this.setToken(token);
+          return this.setToken(token).pipe(tap(() => {
+            // After login, start push orchestrator to register the device to the backend.
+            this.pushOrchestrator.start().catch(err => {
+              console.error('PushOrchestrator start error after login:', err);
+            });
+          }));
         }),
         map(() => void 0),
         catchError((err) => throwError(() => err))
@@ -92,7 +98,10 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.setToken(null);
+    return from(this.pushOrchestrator.stop()).pipe(
+      catchError(() => from([void 0])), // don't block logout if unregister fails
+      concatMap(() => this.setToken(null))
+    );
   }
 
   me(): Observable<any> {

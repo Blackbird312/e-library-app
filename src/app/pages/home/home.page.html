@@ -34,9 +34,9 @@
           
 
           <!-- Progress Bar (Optional) -->
-          <div class="due-progress" *ngIf="!loan.returned">
+          <div class="due-progress" *ngIf="!loan.returnDate">
             <div class="progress-label">
-              <span>Time remaining</span>
+              <span>Time remaining </span>
               <span>{{ getDaysRemaining(loan.dueDate) }} days</span>
             </div>
             <div class="progress-bar">
@@ -48,7 +48,7 @@
 
           <!-- Status Section -->
           <div class="status-section">
-            <div class="days-remaining" [class.overdue]="isOverdue(loan.dueDate) && !loan.returned">
+            <div class="days-remaining" [class.overdue]="isOverdue(loan.dueDate)">
               <span *ngIf="!loan.returned">
                 {{ isOverdue(loan.dueDate) ? 'Overdue' : getDaysRemaining(loan.dueDate) + ' days left' }}
               </span>
@@ -59,11 +59,11 @@
               {{ loan.returned ? 'Returned' : (isOverdue(loan.dueDate) ? 'Overdue' : 'Active') }}
             </ion-badge>
           </div>
-          <div class="date-card return-date" *ngIf="loan.returned">
+          <div class="date-card return-date" *ngIf="loan.returnDate">
             <span class="date-label">Returned on</span>
             <span class="date-value">{{ loan.returnDate | date:'MMM dd' }}</span>
           </div>
-          <ion-button *ngIf="!loan.returned" [color]="'success'" (click)="returnLoan($event, loan.id, loan.book.title)">
+          <ion-button *ngIf="!loan.returnDate" [color]="'success'" (click)="returnLoan($event, loan.id, loan.book.title)">
             Return Book
           </ion-button>
         </div>

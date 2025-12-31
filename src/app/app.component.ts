@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { AuthService } from './services/auth.service';
-import { PushService } from './services/push.serice';
+import { PushService } from './services/push.service';
 
 @Component({
   selector: 'app-root',

@@ -1,4 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
+import { ReplaySubject } from 'rxjs';
 import {
   PushNotifications,
   PushNotificationSchema,
@@ -12,6 +13,9 @@ import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class PushService {
+  private tokenSubject = new ReplaySubject<string>(1);
+  token$ = this.tokenSubject.asObservable();
+
   constructor(
     private toastCtrl: ToastController,
     private inbox: NotificationInboxService,
@@ -30,13 +34,13 @@ export class PushService {
 
     PushNotifications.addListener('registration', (token: Token) => {
       console.log('FCM token:', token.value);
+      this.tokenSubject.next(token.value); // ✅ expose token
     });
 
     PushNotifications.addListener('registrationError', (err) => {
       console.error('Push registration error:', err);
     });
 
-    // ✅ Foreground notification
     PushNotifications.addListener('pushNotificationReceived', (n: PushNotificationSchema) => {
       this.zone.run(async () => {
         const title = n.title ?? 'Notification';
@@ -67,7 +71,6 @@ export class PushService {
       });
     });
 
-    // ✅ Tapped notification
     PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
       this.zone.run(() => {
         const n = action.notification;
